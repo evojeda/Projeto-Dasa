@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/gestor.css">
+    <title>DASA - GESTOR</title>
+</head>
+<body>
+    <header class="shellbar">
+        <div class="shellbar-left">
+            <img src="../assets/img/logo-dasa.png" class="logo" alt="DASA">
+        </div>
+        <div class="logo" aria-hidden="true">
+            <h1>Gestão de Almoxarifado</h1>
+        </div>
+        <div class="shellbar-center">
+            <div class="search" role="search">
+                <img src="../assets/img/icon-search.svg.svg" class="icon" alt="" aria-hidden="true">
+                <input type="search" placeholder="Buscar itens, etiquetas ou colaboradores…" aria-label="Buscar">
+            </div>
+        </div>
+
+        <div class="shellbar-right">
+            <button class="icon-btn" id="btnNotify" title="Notificações">
+                <img src="../assets/img/icon-bell.svg.svg" class="icon" alt="">
+            </button>
+            <!-- <button class="icon-btn" id="btnExport" title="Exportar">
+                <img src="../assets/img/icon-export.svg.svg" class="icon" alt=""> Exportar
+            </button> -->
+            <div class="profile">
+                <img src="../assets/img/avatar-colaborador.jpg" alt="Foto do Gestor" class="avatar">
+                <div class="meta"><b>Olá, Gestor(a)</b><br><small>Unidade Paulista</small></div>
+            </div>
+
+            <button class="icon-btn" id="logoutBtn" aria-label="Sair">
+                <img src="../assets/img/icon-logout.svg.svg" alt="" class="icon" aria-hidden="true">
+            </button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar" aria-label="Navegação">
+            <a class="nav-link active" href="#visao-geral"><img src="../assets/img/icon-dashboard.svg.svg" class="icon" alt=""><span>Visão geral</span></a>
+            <a class="nav-link" href="#estoque"><img src="../assets/img/icon-box.svg.svg" class="icon" alt=""><span>Estoque</span></a>
+            <a class="nav-link" href="#movimentacoes"><img src="../assets/img/icon-arrows.svg.svg" class="icon" alt=""><span>Movimentações</span></a>
+            <a class="nav-link" href="#colaboradores"><img src="../assets/img/icon-user.svg.svg" class="icon" alt=""><span>Colaboradores</span></a>
+            <a class="nav-link" href="#inventarios"><img src="../assets/img/icon-calendar.svg.svg" class="icon" alt=""><span>Inventários</span></a>
+            <a class="nav-link" href="#"><img src="../assets/img/icon-report.svg.svg" class="icon" alt=""><span>Relatórios</span></a>
+            <a class="nav-link" href="#"><img src="../assets/img/icon-settings.svg.svg" class="icon" alt=""><span>Configurações</span></a>
+            <!-- <button class="collapse" title="Recolher menu"><img src="../assets/img/icon-collapse.svg.svg" class="icon" alt=""></button> -->
+        </aside>
+
+        <main class="content">
+            <section id="visao-geral">
+                <section class="kpis">
+                    <article class="kpi">
+                        <div class="kpi-title">Saldo total</div>
+                        <div class="kpi-value ok" id="kpiSaldo">12.480</div>
+                        <div class="kpi-meta">+3,1% / 30 dias</div>
+                    </article>
+    
+                    <article class="kpi">
+                        <div class="kpi-title">Itens críticos</div>
+                        <div class="kpi-value danger" id="kpiCriticos">18</div>
+                        <div class="kpi-meta">Abaixo do mínimo</div>
+                    </article>
+    
+                    <artcle class="kpi">
+                        <div class="kpi-title">Próx. vencimento</div>
+                        <div class="kpi-value" id="kpiVenc">27</div>
+                        <div class="kpi-meta">≤ 60 dias</div>
+                    </artcle>
+    
+                    <article class="kpi">
+                        <div class="kpi-title">Baixa rotatividade</div>
+                        <div class="kpi-value" id="kpiBaixa">42</div>
+                        <div class="kpi-meta">&gt; 90 dias sem saída</div>
+                    </article>
+                </section>
+            </section>
+
+            <div class="grid-2">
+                <div>
+                    <section class="panel">
+                        <h2 class="panel-title">
+                            <img src="../assets/img/icon-filter.svg.svg" class="icon" alt=""> Filtros
+                        </h2>
+                        <form class="filters" id="filtros">
+                            <label>Categoria
+                                <select id="fCat">
+                                    <option>Todas</option><option>EPI</option><option>Descartáveis</option>
+                                    <option>Higiene</option><option>Farmácia</option><option>Limpeza</option>
+                                </select>
+                            </label>
+
+                            <label>Status
+                                <select id="fStatus">
+                                    <option>Todos</option><option>Crítico</option><option>OK</option><option>Venc. 60d</option><option>Excesso</option>
+                                </select>
+                            </label>
+
+                            <label>Vencimento até
+                                <input type="date" id="fDate">
+                            </label>
+
+                            <label>Rotatividade
+                                <select id="fRota">
+                                    <option>Todas</option><option>Alta</option><option>Média</option><option>Baixa</option>
+                                </select>
+                            </label>
+
+                            <div class="actions">
+                                <button class="btn-ghost" type="reset">Limpar</button>
+                                <button class="btn-primary" type="submit">
+                                    <img src="../assets/img/icon-refresh.svg.svg" class="icon" alt=""> Atualizar
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section id="movimentacoes" class="panel">
+                        <h2 class="panel-title">
+                            <img src="../assets/img/icon-arrows.svg.svg" class="icon" alt=""> Movimentações recentes
+                        </h2>
+                        <div class="table-wrap">
+                            <table class="table" id="movTable">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th><th>Tipo</th><th>Item</th><th>Código</th><th>Qtd</th><th>Colaborador</th><th>Etiqueta</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>10/09 09:42</td><td>Saída</td><td>Luva látex M</td><td>EPI-001</td><td>-20</td><td>Evellyn</td><td>7845-LLM</td></tr>
+                                    <tr><td>10/09 08:10</td><td>Entrada</td><td>Álcool 70%</td><td>HIG-010</td><td>+120</td><td>Bruno</td><td>5590-ALC</td></tr>
+                                    <tr><td>09/09 17:18</td><td>Saída</td><td>Gaze estéril</td><td>DESC-007</td><td>-15</td><td>Larissa</td><td>1140-GZE</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section id="estoque" class="panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title">
+                                <img src="../assets/img/icon-box.svg.svg" class="icon" alt=""> Estoque atual
+                            </h2>
+                            <div class="panel-tools">
+                                <button class="btn-ghost" id="btnExport2">
+                                    <img src="../assets/img/icon-export.svg.svg" class="icon" alt=""> Exportar
+                                </button>
+                                <button class="btn-ghost" id="btnPrint">
+                                    <img src="../assets/img/icon-print.svg.svg" class="icon" alt=""> Imprimir
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="table-compact" id="stockTable">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th><th>Código</th><th>Categoria</th><th>Saldo</th><th>Mín.</th><th>Máx.</th><th>Validade</th><th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Luva látex M</td><td>EPI-001</td><td>EPI</td><td>180</td><td>150</td><td>600</td><td>—</td><td>OK</td></tr>
+                                    <tr class="row-danger"><td>Máscara cirúrgica</td><td>EPI-002</td><td>EPI</td><td>70</td><td>120</td><td>500</td><td>—</td><td>Crítico</td></tr>
+                                    <tr class="row-warning"><td>Gaze estéril</td><td>DESC-007</td><td>Descartáveis</td><td>250</td><td>200</td><td>800</td><td>30/11/2025</td><td>Venc. 60d</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="legend">
+                            <span class="badge ok"><span class="dot"></span> OK</span>
+                            <span class="badge crit"><span class="dot"></span> Crítico</span>
+                            <span class="badge warn"><span class="dot"></span> Venc. 60d</span>
+                        </div>
+                    </section>
+
+                    <section id="inventarios" class="panel">
+                        <h2 class="panel-title">
+                            <img src="../assets/img/icon-calendar.svg.svg" class="icon" alt=""> Inventários
+                        </h2>
+                        <div class="inventory">
+                            <div class="inventory-info">
+                                <p><b>Próximo inventário:</b> 25/09 às 18:00 • Responsável: <b>Bruno</b></p>
+                                <p><small>Escopo: EPI + Descartáveis • Contagem cega</small></p>
+                            </div>
+                            <div class="inventory-actions">
+                                <button class="btn-ghost" id="btnReprog">
+                                    <img src="../assets/img/icon-edit.svg.svg" class="icon" alt=""> Reprogramar
+                                </button>
+                                <button class="btn-primary" id="btnNovoInv">
+                                    <img src="../assets/img/icon-plus.svg.svg" class="icon" alt=""> Novo inventário
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== Colaboradores ===== -->
+                    <section class="panel" id="colaboradores">
+                        <h2 class="panel-title">
+                        <img src="../assets/img/icon-user.svg.svg" class="icon" alt=""> Colaboradores
+                        </h2>
+
+                        <div class="filters" style="grid-template-columns: 2fr 1fr 1fr">
+                            <label class="full">
+                                Buscar
+                                <input type="search" id="colabSearch" placeholder="Buscar por nome, unidade, perfil ou ID…">
+                            </label>
+                            <label>
+                                Perfil
+                                <select id="colabRole">
+                                    <option value="">Todos</option>
+                                    <option>Colaborador</option>
+                                    <option>Gestor</option>
+                                </select>
+                            </label>
+                            <label>
+                                Status
+                                <select id="colabStatus">
+                                    <option value="">Todos</option>
+                                    <option>Ativo</option>
+                                    <option>Inativo</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table class="table" id="colabTable">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>ID</th>
+                                        <th>Unidade</th>
+                                        <th>Perfil</th>
+                                        <th>Status</th>
+                                        <th>E-mail</th>
+                                    </tr>
+                                </thead>
+                                <tbody><!-- render via JS --></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <aside class="feed" id="feed">
+                    <h3>Tempo real</h3>
+                    <!-- JS -->
+                </aside>
+            </div>
+        </main>
+    </div>
+    
+    <div class="toasts" id="toasts"></div>
+    <div class="modal-backdrop" id="modal">
+        <div class="modal">
+            <h3>Agendar inventários</h3>
+            <div class="modal-grid">
+                <label>Data <input type="date" id="invDate"></label>
+                <label>Hora <input type="time" id="invTime"></label>
+                <label class="full">Escopo
+                    <select id="invScope">
+                        <option>EPI + Descartáveis</option><option>Farmácia</option><option>Higiene</option><option>Todos</option>
+                    </select>
+                </label>
+            </div>
+
+            <footer>
+                <button class="btn-ghost" id="mCancel">Cancelar</button>
+                <button class="btn-primary" id="mSave">
+                    <img src="../assets/img/icon-plus.svg.svg" class="icon" alt=""> Agendar
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/gestor.js"></script>
+</body>
+</html>

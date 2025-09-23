@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>DASA</title>
+</head>
+<body>
+    <main class="login-container">
+        <section class="login-box">
+            <img src="./assets/img/logo-dasa.png" alt="Logo Dasa" class="logo-dasa">
+
+            <form id="loginform">
+                <div class="input-group">
+                    <label for="userId">Usário</label>
+                    <input type="text" id="userId" name="userId" placeholder="email@dasa.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Senha</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                        <img src="./assets/img/vieweyes-password.png" 
+                            alt="Mostrar senha" 
+                            id="togglePassword" 
+                            class="toggle-icon">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="role">Perfil</label>
+                    <select name="role" id="role">
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="colaborador">Colaborador</option>
+                        <option value="gestor">Gestor</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="submitBtn">Entrar</button>
+                <div id="errorBox" class="error"></div>
+                <div id="successBox" class="success"></div>
+            </form>
+        </section>
+    </main>
+
+    <script src="./js/main.js"></script>
+</body>
+</html>

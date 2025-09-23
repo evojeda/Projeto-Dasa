@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="PT-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/colaborador.css">
+    <title>DASA Colaborador</title>
+</head>
+<body>
+    <header class="topbar">
+        <div class="container">
+            <div class="topbar-left">
+                <img src="../assets/img/logo-dasa.png" alt="Logo Dasa" class="topbar-logo">
+    
+                <div class="topbar-search" role="search">
+                    <img src="../assets/img/icon-search.svg.svg" alt="" class="icon" aria-hidden="true">
+                    <input id="globalSearch" type="search" placeholder="Buscar por nome, código ou etiqueta..." aria-label="Buscar material"> 
+                </div>
+            </div>
+    
+            <div class="topbar-right">
+                <button class="icon-btn cart-btn" id="cartBtn" aria-label="Registro de retirada">
+                    <img src="../assets/img/icon-register.svg.svg" alt="" class="icon" aria-hidden="true">
+                    <span class="badge" id="cartBadge" hidden>0</span>
+                </button>
+    
+                <button class="icon-btn" id="bellBtn" aria-label="Notificações">
+                    <img src="../assets/img/icon-bell.svg.svg" class="icon" alt="">
+                    <span class="badge" id="bellBadge" hidden>0</span>
+                </button>
+    
+                <div class="profile">
+                    <img src="../assets/img/avatar-colaborador.jpg" alt="Foto do colaborador" class="profile-avatar">
+                    <div class="profile-meta">
+                        <b>Olá, Bruno</b>
+                        <small>Unidade Paulista * ID 00210104</small>
+                    </div>
+    
+                    <button class="icon-btn" aria-label="Sair">
+                        <img src="../assets/img/icon-logout.svg.svg" alt="" class="icon" aria-hidden="true">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="notif-popover" id="notifPopover" aria-hidden="true">
+            <div class="notif-head">
+                <strong>Notificações</strong>
+                <button class="notif-clear" id="notifClear" type="button">Limpar</button>
+            </div>
+                <ul class="notif-list" id="notifList" role="list"></ul>
+            </div>
+    </header>
+
+    <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+        <div class="cart-header">
+            <h3>Registro de retirada</h3>
+            <button class="cart-close" id="cartClose" aria-label="Fechar">×</button>
+        </div>
+        <div class="cart-body" id="cartList">
+            <!-- itens renderizados via JS -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <small>Itens:</small> <b id="cartCount">0</b>
+            </div>
+            <div class="cart-actions">
+                <button class="btn-ghost" id="cartClear">Limpar</button>
+                <button class="btn-primary" id="cartSubmit">Registrar</button>
+            </div>
+        </div>
+    </aside>
+    <div class="cart-backdrop" id="cartBackdrop" hidden></div>
+
+
+    <main> 
+        <div class="grid">
+            <section class="col-main">
+                <div class="hero-cards">
+                    <article class="hero-card hero--azul">
+                        <div class="hero-card__content">
+                            <h2>Retire materiais</h2>
+                            <p>Escaneie o código do item ou pesquise pelo nome/código.</p>
+                            <!-- <button class="btn btn--primary">Nova retirada</button> -->
+                        </div>
+                    </article>
+    
+                    <article class="hero-card hero--claro">
+                        <div class="hero-card__content">
+                            <h2>Histórico & etiquetas</h2>
+                            <p>Veja suas últimas retiradas e os códigos/etiquetas usados.</p>
+                            <!-- <button class="btn btn--ghost">Ver histórico</button> -->
+                        </div>
+                    </article>
+                </div>
+    
+                <h3 class="section-title">Categorias</h3>
+                <div class="categories" id="categoryBar">
+                    <button class="category active" data-cat="all">
+                        <img src="../assets/img/icon-box.svg.svg" class="category-icon" alt=""><span>Todos</span>
+                    </button>
+                    <button class="category" data-cat="EPI">
+                        <img src="../assets/img/cat-epi.png.png" alt="" class="category-icon"><span>EPI</span>
+                    </button>
+    
+                    <button class="category" data-cat="Descartáveis">
+                        <img src="../assets/img/cat-descartaveis.svg.svg" alt="" class="category-icon"><span>Descartaveis</span>
+                    </button>
+    
+                    <button class="category" data-cat="Higiene">
+                        <img src="../assets/img/cat-higiene.svg.svg" alt="" class="category-icon"><span>Higiene</span>
+                    </button>
+    
+                    <button class="category" data-cat="Farmácia">
+                        <img src="../assets/img/cat-farmacia.svg.svg" alt="" class="category-icon"><span>Farmacia</span>
+                    </button>
+    
+                    <button class="category" data-cat="Limpeza">
+                        <img src="../assets/img/cat-limpeza.svg.svg" alt="" class="category-icon"><span>Limpeza</span>
+                    </button>
+    
+                    <button class="category" data-cat="Diversos">
+                        <img src="../assets/img/cat-diversos.png.png" alt="" class="category-icon"><span>Diversos</span>
+                    </button>
+                </div>
+    
+                <aside class="col-aside">
+                    <section class="panel">
+                        <div class="quick-actions">
+                            <button class="chip">
+                                <img src="../assets/img/icon-scan.svg.svg" class="icon" alt="">
+                                <span>Escanear itens</span>
+                            </button>
+                            <button class="chip" id="historyBtn">
+                                <img src="../assets/img/icon-history.svg.svg" class="icon" alt="">
+                                <span>Últimas retiradas</span>
+                            </button>
+                            <!-- <button class="chip">
+                                <img src="../assets/img/icon-search.svg.svg" class="icon" alt="">
+                                <span>Buscar por código</span>
+                            </button> -->
+                        </div>
+                    </section>
+    
+                    <section class="panel panel--items">
+                        <h3>Itens em destaque</h3>
+                        <div class="items-grid" id="itemsGrid">
+                            
+                        </div>
+                    </section>
+    
+                    <section class="panel tips-panel" aria-labelledby="tips-title">
+                        <h3 id="tips-title">Dicas rápidas</h3>
+                        <div class="tips-viewport" role="status" aria-live="polite">
+                            <p class="tip-line">Use sempre EPI ao manipular materiais.</p>
+                        </div>
+                        <div class="tips-controls">
+                            <button class="tip-prev" aria-label="Dica anterior">‹</button>
+                            <div class="tips-dots" aria-hidden="true"></div>
+                            <button class="tip-next" aria-label="Próxima dica">›</button>
+                        </div>
+                    </section>
+                </aside>
+        </div>
+    </main>
+
+    <!-- Drawer: Últimas retiradas -->
+    <div class="drawer" id="historyDrawer" aria-hidden="true">
+        <div class="drawer-head">
+            <h3>Últimas retiradas</h3>
+            <button class="drawer-close" id="histClose" aria-label="Fechar">×</button>
+        </div>
+
+        <div class="drawer-body">
+            <div class="hist-tools">
+                <button class="btn-ghost" id="histExport">
+                <img class="icon" src="../assets/img/icon-export.svg.svg" alt="">Exportar CSV
+                </button>
+                <button class="btn-ghost" id="histClear">
+                    <img class="icon" src="../assets/img/icon-trash.svg" alt="">Limpar histórico
+                </button>
+            </div>
+
+            <ul class="hist-list" id="histList" role="list"></ul>
+        </div>
+    </div>
+    <div class="drawer-backdrop" id="historyBackdrop" hidden></div>
+
+    <script src="../js/colaborador.js"></script>
+</body>
+</html>
