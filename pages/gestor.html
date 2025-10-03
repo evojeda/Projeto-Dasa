@@ -26,9 +26,6 @@
             <button class="icon-btn" id="btnNotify" title="Notificações">
                 <img src="../assets/img/icon-bell.svg.svg" class="icon" alt="">
             </button>
-            <!-- <button class="icon-btn" id="btnExport" title="Exportar">
-                <img src="../assets/img/icon-export.svg.svg" class="icon" alt=""> Exportar
-            </button> -->
             <div class="profile">
                 <img src="../assets/img/avatar-colaborador.jpg" alt="Foto do Gestor" class="avatar">
                 <div class="meta"><b>Olá, Gestor(a)</b><br><small>Unidade Paulista</small></div>
@@ -49,7 +46,6 @@
             <a class="nav-link" href="#inventarios"><img src="../assets/img/icon-calendar.svg.svg" class="icon" alt=""><span>Inventários</span></a>
             <a class="nav-link" href="#"><img src="../assets/img/icon-report.svg.svg" class="icon" alt=""><span>Relatórios</span></a>
             <a class="nav-link" href="#"><img src="../assets/img/icon-settings.svg.svg" class="icon" alt=""><span>Configurações</span></a>
-            <!-- <button class="collapse" title="Recolher menu"><img src="../assets/img/icon-collapse.svg.svg" class="icon" alt=""></button> -->
         </aside>
 
         <main class="content">
@@ -145,14 +141,6 @@
                             <h2 class="panel-title">
                                 <img src="../assets/img/icon-box.svg.svg" class="icon" alt=""> Estoque atual
                             </h2>
-                            <div class="panel-tools">
-                                <button class="btn-ghost" id="btnExport2">
-                                    <img src="../assets/img/icon-export.svg.svg" class="icon" alt=""> Exportar
-                                </button>
-                                <button class="btn-ghost" id="btnPrint">
-                                    <img src="../assets/img/icon-print.svg.svg" class="icon" alt=""> Imprimir
-                                </button>
-                            </div>
                         </div>
                         <div class="table-wrap">
                             <table class="table-compact" id="stockTable">
@@ -190,6 +178,15 @@
                                 </button>
                                 <button class="btn-primary" id="btnNovoInv">
                                     <img src="../assets/img/icon-plus.svg.svg" class="icon" alt=""> Novo inventário
+                                </button>
+                            </div>
+
+                            <div class="panel-tools">
+                                <!-- <button class="btn-ghost" id="btnExport2">
+                                    <img src="../assets/img/icon-export.svg.svg" class="icon" alt=""> Exportar
+                                </button> -->
+                                <button class="btn-ghost" id="btnPrint">
+                                    <img src="../assets/img/icon-print.svg.svg" class="icon" alt=""> Imprimir
                                 </button>
                             </div>
                         </div>
@@ -260,6 +257,13 @@
                 <label class="full">Escopo
                     <select id="invScope">
                         <option>EPI + Descartáveis</option><option>Farmácia</option><option>Higiene</option><option>Todos</option>
+                    </select>
+                </label>
+
+                <label class="full">Responsável
+                    <select id="invResp">
+                        <option value="">Selecione…</option>
+                            <!-- opções serão preenchidas via JS -->
                     </select>
                 </label>
             </div>

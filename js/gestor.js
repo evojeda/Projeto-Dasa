@@ -66,13 +66,10 @@ function applyFilters(){
     if(cat && cat!=="todas" && !rowCat.includes(cat)) show=false;
     if(status && status!=="todos" && !rowStatus.includes(status)) show=false;
     if(dval && rowVal && rowVal > dval) show=false;
-    // rotatividade é apenas ilustrativa aqui
 
-    // >>> importante: quando mostrar, usar "table-row"
     tr.style.display = show ? "table-row" : "none";
   });
 
-  // recalcula classes/status depois de esconder/mostrar
   recalcStockStatus();
 }
 
@@ -95,7 +92,6 @@ function bindExportPrint(){
   $("#btnPrint")?.addEventListener("click", ()=>{
     const src = $("#stockTable"); if(!src) return;
     const clone = src.cloneNode(true);
-    // remove linhas escondidas
     $$("tbody tr", src).forEach((tr,i)=>{
       if(tr.style.display==="none") clone.tBodies[0].rows[i].remove();
     });
@@ -146,7 +142,6 @@ function simulateRealtime(){
   const user = users[Math.floor(Math.random()*users.length)];
   pushEvent(tipo, item, cod, qtd, user);
 
-  // Ajuste visual no estoque
   const rows = $$("#stockTable tbody tr");
   const r = rows[Math.floor(Math.random()*rows.length)];
   if(r){
@@ -156,13 +151,13 @@ function simulateRealtime(){
     saldoCell.textContent = saldo;
     recalcStockStatus();
   }
-  // KPI simples
   const kSaldo = $("#kpiSaldo");
   if(kSaldo){
     const n = parseInt((kSaldo.textContent||"").replace(/\D/g,'')) || 0;
     kSaldo.textContent = (n + qtd).toLocaleString("pt-BR");
   }
 }
+
 
 // ===== modal inventário =====
 function bindInventoryModal(){
@@ -194,6 +189,27 @@ const COLABS = [
   { id: "00210107", name: "João Lima",       unit: "Unidade Centro",   role: "Colaborador", email: "joao@dasa.com",    status: "Inativo" },
   { id: "90000001", name: "Gestor(a) Paula", unit: "Unidade Paulista", role: "Gestor",      email: "paula@dasa.com",   status: "Ativo"   },
 ];
+
+// --- lista para o select de responsáveis (somente ativos) ---
+function populateRespSelect() {
+  const sel = document.querySelector("#invResp");
+  if (!sel) return;
+
+  sel.innerHTML = `<option value="">Selecione…</option>`;
+  COLABS
+    .filter(c => c.status === "Ativo")                
+    .sort((a,b)=> a.name.localeCompare(b.name))       
+    .forEach(c => {
+      const op = document.createElement("option");
+      op.value = c.name;                              
+      op.textContent = `${c.name} • ${c.unit}`;
+      sel.appendChild(op);
+    });
+
+  const last = localStorage.getItem("dasaLastResp");
+  if (last) sel.value = last;
+}
+
 
 function renderColabs() {
   const tb   = document.querySelector("#colabTable tbody");
@@ -234,7 +250,7 @@ function bindColabs() {
   el2.addEventListener("change", renderColabs);
   el3.addEventListener("change", renderColabs);
 
-  renderColabs(); // primeira renderização
+  renderColabs(); 
 }
 
 
@@ -242,7 +258,6 @@ function bindColabs() {
 document.addEventListener("DOMContentLoaded", ()=>{
   recalcStockStatus();
   applyFilters();
-  // filtros eventos
   $("#filtros")?.addEventListener("submit", e=>{e.preventDefault(); recalcStockStatus(); applyFilters();});
   $("#filtros")?.addEventListener("change", ()=>{recalcStockStatus(); applyFilters();});
   $("#filtros")?.addEventListener("reset", ()=> setTimeout(()=>{recalcStockStatus(); applyFilters();},0));
@@ -251,31 +266,91 @@ document.addEventListener("DOMContentLoaded", ()=>{
   bindInventoryModal();
   bindNotifications();
 
-   // <<< novo
   bindColabs();
   bindSearch();
 
-
-  // simulação de tempo real (trocar por API/WebSocket depois)
   setInterval(simulateRealtime, 5000);
 });
+
+// ===== util: baixa um CSV em memória =====
+function downloadCSV(filename, rows) {
+  const csv = rows.map(r => r.map(c => {
+    const s = String(c ?? "");
+    return /[",;\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+  }).join(";")).join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportPlanilhaContagem(meta){
+  const header = [
+    ["Inventário - DASA"],
+    [`Data;${meta?.data || "-"}`],
+    [`Hora;${meta?.hora || "-"}`],
+    [`Escopo;${meta?.escopo || "-"}`],
+    [`Responsável;${meta?.responsavel || "-"}`],
+    [""],
+    ["Item","Código","Etiqueta","Qtd. Sistema","Qtd. Contada","Diferença","Obs."]
+  ];
+
+  const rowsEstoque = Array.from(document.querySelectorAll("#stockTable tbody tr"))
+    .filter(tr => tr.style.display !== "none")
+    .map(tr => {
+      const t = tr.children;
+      return [
+        t[0]?.textContent.trim(), 
+        t[1]?.textContent.trim(), 
+        "",                        
+        t[3]?.textContent.trim(), 
+        "",                        
+        "",                        
+        ""                         
+      ];
+    });
+
+  downloadCSV(`inventario_${(meta?.data||"").replaceAll("/","-") || "planilha"}.csv`, [
+    ...header,
+    ...rowsEstoque
+  ]);
+}
+
+// ===== util: imprime o bloco de inventário =====
+function printInventario(htmlContent){
+  const w = window.open("", "_blank");
+  w.document.write(`
+    <html><head><title>Inventário</title>
+      <style>
+        body{font:14px system-ui;margin:24px;color:#0B1B3A}
+        .title{font-weight:800;font-size:20px;margin-bottom:10px}
+        .box{border:1px solid #E6EEF8;border-radius:12px;padding:12px}
+      </style>
+    </head><body>
+      <div class="title">Inventários</div>
+      <div class="box">${htmlContent}</div>
+      <script>window.onload=()=>{print();setTimeout(()=>close(),200)}<\/script>
+    </body></html>`);
+  w.document.close();
+}
+
 
 // ============ INVENTÁRIOS (agenda + painel + export) ============
 (function initInventarios(){
   const $  = (s, r=document)=>r.querySelector(s);
   const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+  const inResp   = $("#invResp");
+  populateRespSelect();
 
-  // ---- storage ----
   const KEY = "dasaInventarios";
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
   const save = (arr) => localStorage.setItem(KEY, JSON.stringify(arr));
 
-  // ---- DOM do card existente ----
   const infoBox   = document.querySelector(".inventory .inventory-info");
   const btnNovo   = $("#btnNovoInv");
   const btnReprog = $("#btnReprog");
 
-  // ---- Modal já existente no seu HTML ----
   const modal     = $("#modal");
   const inDate    = $("#invDate");
   const inTime    = $("#invTime");
@@ -285,16 +360,15 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   if (!infoBox) return;
 
-  // cria array default se vazio (um exemplo de agenda futura)
   let data = load();
   if (data.length === 0) {
-    const dt = new Date(); dt.setDate(dt.getDate()+7); // +7 dias
+    const dt = new Date(); dt.setDate(dt.getDate()+7); 
     data = [{
       id: crypto.randomUUID(),
       when: new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), 18, 0, 0).toISOString(),
       scope: "EPI + Descartáveis",
       resp: "Bruno",
-      status: "agendado" // em_andamento | concluido
+      status: "agendado" 
     }];
     save(data);
   }
@@ -327,7 +401,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
     const {date,time} = formatDateTime(nxt.when);
 
-    // contador D-H:M (simples)
     const leftMs = new Date(nxt.when) - new Date();
     const days   = Math.max(0, Math.floor(leftMs / 86400000));
     const hours  = Math.max(0, Math.floor((leftMs % 86400000)/3600000));
@@ -335,32 +408,23 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const badge  = leftMs > 0 ? ` • <small><b>${days}d ${hours}h ${mins}m</b></small>` : "";
 
     infoBox.innerHTML = `
-      <p><b>Próximo inventário:</b> ${date} às ${time} • Responsável: <b>${nxt.resp}</b>${badge}</p>
+      <p><b>Próximo inventário:</b> ${date} às ${time} • Responsável: <b>${nxt.resp || "-"}</b>${badge}</p>
       <p><small>Escopo: ${nxt.scope} • ${nxt.status === "agendado" ? "Contagem cega" : nxt.status}</small></p>
       <div style="display:flex; gap:8px; margin-top:8px;">
-        <button class="btn-ghost" id="invDoneBtn">Marcar como concluído</button>
-        <button class="btn-ghost" id="invExportBtn"><img class="icon" src="../assets/img/icon-export.svg.svg" alt=""> Exportar planilha de contagem</button>
+      <button class="btn-ghost" id="invExportBtn"><img class="icon" src="../assets/img/icon-export.svg.svg" alt=""> Exportar planilha de contagem</button>
       </div>
     `;
 
-    // ações auxiliares
-    $("#invDoneBtn")?.addEventListener("click", ()=>{
-      nxt.status = "concluido";
-      save(data); renderCard();
-      toast("Inventário marcado como concluído.", "ok");
-    });
+    const exportMeta = { data: date, hora: time, escopo: nxt.scope, responsavel: nxt.resp };
+    $("#invExportBtn")?.addEventListener("click", ()=> exportPlanilhaContagem(exportMeta));
+    $("#btnExport2")?.addEventListener("click", ()=> exportPlanilhaContagem(exportMeta));
+    $("#btnPrint")?.addEventListener("click", ()=> printInventario(infoBox.outerHTML));
 
-    $("#invExportBtn")?.addEventListener("click", ()=>{
-      exportPlanilhaContagem(nxt.scope);
-    });
-
-    // lembrete simples: se faltar menos de 30 minutos, notifica
     if (leftMs > 0 && leftMs < 30*60*1000) {
       toast(`Inventário em ${Math.ceil(leftMs/60000)} minutos`, "warn");
     }
   }
 
-  // abre modal preenchendo (para reprogramar) ou em branco (novo)
   function openModal(prefill){
     modal.style.display = "flex";
     if (prefill){
@@ -368,10 +432,13 @@ document.addEventListener("DOMContentLoaded", ()=>{
       inDate.value = d.toISOString().slice(0,10);
       inTime.value = `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
       inScope.value = prefill.scope;
+      if (inResp) inResp.value = prefill.resp || localStorage.getItem("dasaLastResp") || "";
     } else {
       inDate.value = ""; inTime.value = ""; inScope.value = "EPI + Descartáveis";
+      if (inResp) inResp.value = localStorage.getItem("dasaLastResp") || "";
     }
-  }
+}
+
   function closeModal(){ modal.style.display = "none"; }
 
   btnNovo?.addEventListener("click", ()=> openModal(null));
@@ -381,78 +448,45 @@ document.addEventListener("DOMContentLoaded", ()=>{
   mCancel?.addEventListener("click", closeModal);
 
   mSave?.addEventListener("click", ()=>{
-    if (!inDate.value || !inTime.value){ toast("Informe data e hora.", "crit"); return; }
-    const [hh,mm] = inTime.value.split(":").map(Number);
-    const d = new Date(inDate.value); d.setHours(hh||0, mm||0, 0, 0);
+  if (!inDate.value || !inTime.value){ toast("Informe data e hora.", "crit"); return; }
 
-    const nxt = nextInventory();
-    if (nxt){
-      // reprograma o próximo
-      nxt.when = d.toISOString();
-      nxt.scope = inScope.value;
-      nxt.status = "agendado";
-    } else {
-      // novo inventário
-      data.push({
-        id: crypto.randomUUID(),
-        when: d.toISOString(),
-        scope: inScope.value,
-        resp: "Bruno",
-        status: "agendado"
-      });
-    }
-    save(data); closeModal(); renderCard();
-    toast(`Inventário agendado: ${inDate.value} ${inTime.value} • ${inScope.value}`, "ok");
+  const respSel = inResp ? inResp.value : "";
+  if (!respSel){ toast("Selecione o responsável.", "crit"); return; }
+
+  const [hh,mm] = inTime.value.split(":").map(Number);
+  const d = new Date(inDate.value); d.setHours(hh||0, mm||0, 0, 0);
+
+  localStorage.setItem("dasaLastResp", respSel);
+
+  const nxt = nextInventory();
+  if (nxt){
+    nxt.when  = d.toISOString();
+    nxt.scope = inScope.value;
+    nxt.resp  = respSel;
+    nxt.status = "agendado";
+  } else {
+    data.push({
+      id: crypto.randomUUID(),
+      when: d.toISOString(),
+      scope: inScope.value,
+      resp: respSel,
+      status: "agendado"
+    });
+  }
+  save(data);
+  closeModal();
+  renderCard();
+  toast(`Inventário agendado: ${inDate.value} ${inTime.value} • ${inScope.value} • Resp.: ${respSel}`, "ok");
   });
 
-  // Exporta CSV de contagem (linhas do estoque filtradas + colunas base)
-  function exportPlanilhaContagem(scopeLabel){
-    const table = $("#stockTable"); if(!table){ toast("Tabela de estoque não encontrada.", "crit"); return; }
-    const rows = $$("tbody tr", table).filter(tr => tr.style.display !== "none");
-
-    // filtra por escopo se fizer sentido (ex.: "EPI", "Descartáveis", ...)
-    const scope = String(scopeLabel||"").toLowerCase();
-    const wantScope = (txt) => !scope || scope.includes("todos") || txt.toLowerCase().includes(scope.includes("epi") ? "epi" : scope);
-
-    const csvRows = [
-      ["Item","Código","Categoria","Saldo","Mín.","Máx.","Validade","Status","Contagem"].join(";")
-    ];
-    rows.forEach(tr=>{
-      const t = tr.children;
-      const cat = (t[2]?.textContent||"");
-      if (!wantScope(cat)) return;
-      const line = [
-        t[0]?.textContent||"", t[1]?.textContent||"", cat,
-        t[3]?.textContent||"", t[4]?.textContent||"", t[5]?.textContent||"",
-        t[6]?.textContent||"", t[7]?.textContent||"", "" // Contagem em branco
-      ].map(s => {
-        const v = String(s).trim();
-        return /[",;\n]/.test(v) ? `"${v.replace(/"/g,'""')}"` : v;
-      }).join(";");
-      csvRows.push(line);
-    });
-
-    const blob = new Blob([csvRows.join("\n")], {type:"text/csv;charset=utf-8"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "planilha_contagem.csv"; a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  // primeira renderização
   renderCard();
 })();
 
 // ===== notificações =====
 function bindNotifications(){
   $("#btnNotify")?.addEventListener("click", ()=>{
-    // Estoque crítico
     toast("⚠️ Máscara cirúrgica abaixo do mínimo (Qtd: 70 / Min: 120)", "crit");
-
-    // Próximo vencimento
     toast("⏳ Gaze estéril vence em 30 dias (30/11/2025)", "warn");
-
-    // Entrada registrada
     toast("✅ Entrada de 120 unidades de Álcool 70% registrada por Bruno", "ok");
   });
 }
@@ -465,19 +499,16 @@ function bindSearch(){
   searchInput.addEventListener("input", ()=>{
     const term = searchInput.value.toLowerCase();
 
-    // Estoque atual
     $$("#stockTable tbody tr").forEach(tr=>{
       const text = tr.textContent.toLowerCase();
       tr.style.display = text.includes(term) ? "" : "none";
     });
 
-    // Movimentações recentes
     $$("#movTable tbody tr").forEach(tr=>{
       const text = tr.textContent.toLowerCase();
       tr.style.display = text.includes(term) ? "" : "none";
     });
 
-    // Colaboradores (se tiver lista renderizada)
     $$("#collabList li").forEach(li=>{
       const text = li.textContent.toLowerCase();
       li.style.display = text.includes(term) ? "" : "none";
@@ -488,10 +519,7 @@ function bindSearch(){
 // ===== logout =====
 function bindLogout(){
   $("#logoutBtn")?.addEventListener("click", ()=>{
-    // (Opcional) limpar dados de sessão/localStorage
-    // localStorage.clear();
 
-    // Redireciona para a tela de login
     window.location.href = "../index.html"; 
   });
 }
@@ -504,6 +532,13 @@ document.addEventListener("DOMContentLoaded", ()=>{
   bindInventoryModal();
   bindNotifications();
   bindSearch();
-  bindLogout();   // <= aqui
+  bindLogout(); 
+
+  populateRespSelect();
+
+  bindColabs();
+  bindSearch();
+  bindLogout();
   setInterval(simulateRealtime, 5000);
+
 });

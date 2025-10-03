@@ -47,7 +47,6 @@
   const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
   const IMG = (name) => `../assets/img/${name}`;
 
-  // 4 itens por categoria
   const ITEMS = [
     // EPI
     { id:"EPI-001", name:"Luva látex M",         tag:"7845-LLM", cat:"EPI",          img: IMG("luva-latex.jpg.jpg") },
@@ -80,7 +79,6 @@
     { id:"DIV-042", name:"Esfigmomanômetro",     tag:"5103-ESF", cat:"Diversos",     img: IMG("esfigmomanometro.jpg") },
     { id:"DIV-043", name:"Tesoura cirúrgica",    tag:"5104-TCR", cat:"Diversos",     img: IMG("tesoura-cirurgica.jpg") },
   ];
-  // expõe para outros módulos
   window.ITEMS = ITEMS;
 
   const grid  = document.querySelector("#itemsGrid") || document.querySelector(".items-grid");
@@ -106,7 +104,6 @@
     grid.innerHTML = list.map(card).join("");
   }
 
-  // troca de categoria (usa data-cat nos botões)
   catBar.addEventListener("click", (ev)=>{
     const btn = ev.target.closest(".category");
     if(!btn) return;
@@ -115,7 +112,6 @@
     render(btn.dataset.cat || "all");
   });
 
-  // ações nos cards (sem alert agora)
   grid.addEventListener("click", (ev)=>{
     const btn = ev.target.closest("button[data-act]");
     if(!btn) return;
@@ -181,7 +177,6 @@
     badge.animate([{transform:'scale(1)'},{transform:'scale(1.2)'},{transform:'scale(1)'}], {duration:250, easing:'ease-out'});
   }
 
-  // expõe globalmente para o carrinho usar
   window.DASA_NOTIFY = { add: addNotification };
 
   function toggle(){
@@ -305,32 +300,26 @@ window.DASA_HISTORY = (function(){
 
   clearBtn.addEventListener("click", ()=>{ cart = {}; save(cart); renderCart(); });
 
-  // >>> REGISTRAR: grava histórico + notifica
   submitBtn.addEventListener("click", ()=>{
     const qtd = totalCount();
     if (!qtd){ alert("Nenhum item para registrar."); return; }
 
-    // monta os itens do registro
     const itemsArray = Object.keys(cart).map(id => {
       const it = findItem(id) || { name: id, tag:"" };
       return { id, name: it.name, tag: it.tag || "", qty: cart[id] };
     });
 
-    // salva no histórico
     const record = { at: new Date().toISOString(), total: qtd, items: itemsArray };
     window.DASA_HISTORY.add(record);
 
-    // notificação
     if (window.DASA_NOTIFY) {
       const preview = itemsArray.slice(0,4).map(i=>`${i.id}×${i.qty}`).join(", ");
       window.DASA_NOTIFY.add("Retirada registrada", preview || `${qtd} item(ns)`);
     }
 
-    // limpa carrinho
     cart = {}; save(cart); renderCart(); closeDrawer();
   });
 
-  // integração com botões "Retirar"
   const grid = document.querySelector("#itemsGrid") || document.querySelector(".items-grid");
   if (grid){
     grid.addEventListener("click", (ev)=>{
@@ -440,10 +429,8 @@ window.DASA_HISTORY = (function(){
 
   if (!input || !grid || !catBar || !ITEMS.length) return;
 
-  // helper: qual categoria está ativa?
   const getActiveCat = () => (catBar.querySelector(".category.active")?.dataset.cat) || "all";
 
-  // mesmo card do catálogo
   const card = (it) => `
     <article class="item-card" data-code="${it.id}" data-cat="${it.cat}">
       <img src="${it.img}" alt="${it.name}" class="item-card-img" onerror="this.style.opacity=.15">
@@ -457,30 +444,24 @@ window.DASA_HISTORY = (function(){
       </div>
     </article>`;
 
-  // debounce para não filtrar a cada tecla
   const debounce = (fn, ms=200) => {
     let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
   };
 
-  // filtra respeitando a categoria ativa
   function runSearch(){
     const qRaw = (input.value || "").trim().toLowerCase();
     const cat  = getActiveCat();
 
-    // base = todos ou só a categoria ativa
     let base = (cat === "all") ? ITEMS : ITEMS.filter(i => i.cat === cat);
 
     if (!qRaw){
-      // sem termo: render padrão da categoria ativa
       grid.innerHTML = base.map(card).join("");
       return;
     }
 
-    // busca por termos (suporta múltiplas palavras)
     const terms = qRaw.split(/\s+/).filter(Boolean);
     const match = (it) => {
       const hay = `${it.name} ${it.id} ${it.tag}`.toLowerCase();
-      // precisa conter TODOS os termos
       return terms.every(t => hay.includes(t));
     };
 
@@ -491,22 +472,18 @@ window.DASA_HISTORY = (function(){
       : `<p class="tip-line">Nenhum resultado para <b>"${qRaw}"</b> em <b>${cat}</b>.</p>`;
   }
 
-  // ligações
   input.addEventListener("input", debounce(runSearch, 200));
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       runSearch();
-      // rola até os itens (qualquer coisinha de UX)
       grid.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   });
 
-  // quando trocar de categoria, refaz a busca atual
   catBar.addEventListener("click", (ev) => {
     if (ev.target.closest(".category")) runSearch();
   });
 
-  // primeira avaliação (caso tenha valor salvo pelo navegador)
   runSearch();
 })();
 
@@ -516,12 +493,10 @@ window.DASA_HISTORY = (function(){
   if(!logoutBtn) return;
 
   logoutBtn.addEventListener("click", ()=>{
-    // limpa dados do localStorage (se quiser que o carrinho/histórico sejam resetados)
     localStorage.removeItem("dasaCart");
     localStorage.removeItem("dasaNotifs");
-    localStorage.removeItem("dasaHistory"); // se você estiver guardando histórico
+    localStorage.removeItem("dasaHistory"); 
 
-    // redireciona para login
     window.location.href = "../index.html"; 
   });
 })();

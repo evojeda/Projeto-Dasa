@@ -1,7 +1,4 @@
-/* ==========================================================
-   DASA – Tela do Colaborador
-   Usa as variáveis já definidas em style.css (cores/raios/sombras)
-   ========================================================== */
+
 .container{
   width: 100%;
   max-width: 1200px;
@@ -145,15 +142,13 @@
   cursor:pointer;
   box-shadow: var(--shadow-md);
 }
-.category:hover{ background: var(--sky-50) }
+
 .category .category-icon{ width: 22px; height: 22px }
 .category span{ font-weight: 600 }
-
-/* estado selecionado da categoria */
 .category.active{
   outline: 2px solid var(--brand-500);
-  background: var(--sky-50);
 }
+
 .category:focus-visible{
   outline: 2px solid var(--brand-500);
 }
@@ -180,7 +175,6 @@
   margin-top: 12px; display:flex; gap:8px; align-items:center;
 }
 
-/* Placeholder caso não queira usar imagens já */
 .thumb--ph{
   width:100%; aspect-ratio:4/3; background: #e9f1ff;
   display:grid; place-items:center; color:#7a8fb2; font-weight:700;
@@ -365,10 +359,8 @@
 }
 .cart-actions{ display: flex; gap: 8px }
 
-/* garante ancoragem do popover ao header */
 .topbar .container{ position: relative; }
 
-/* badge reaproveitado: já usamos no caderninho */
 #bellBtn{ position: relative; }
 #bellBtn .badge{
   position: absolute; top: -6px; right: -6px;
@@ -377,7 +369,6 @@
   font-size: 12px; display:grid; place-items:center; box-shadow: var(--shadow-md);
 }
 
-/* popover */
 .notif-popover{
   position: absolute; right: 0; top: calc(100% + 8px);
   width: min(360px, 92vw);
@@ -414,7 +405,7 @@
 /* ===== Drawer: Últimas retiradas ===== */
 .drawer {
   position: fixed;
-  top: 0; right: -420px; /* escondido fora da tela */
+  top: 0; right: -420px; 
   width: 420px; max-width: 92vw;
   height: 100dvh;
   background: #fff;

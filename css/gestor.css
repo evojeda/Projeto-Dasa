@@ -1,10 +1,7 @@
-/* ===== Paleta vem do :root no style.css ===== */
-
-/* ---------- Reset rápido ---------- */
-*{box-sizing:border-box}
+/* *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;color:var(--ink-900);font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,var(--sky-100),#fff)}
-img{display:block;max-width:100%}
+body{margin:0;color:var(--ink-900);font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background-color: var(--sky-100);}
+img{display:block;max-width:100%} */
 
 /* ---------- Shellbar (topo) ---------- */
 .shellbar{
@@ -142,19 +139,14 @@ img{display:block;max-width:100%}
 /* ====== ICONES SVG ====== */
 .icon{width:18px;height:18px;display:inline-block}
 
-/* ícones claros no menu lateral */
 .sidebar .nav-link .icon,
 .sidebar .collapse .icon{
   filter: invert(1) brightness(1.2);
 }
 
-/* logo no topo quando for <img> */
 .shellbar-left .logo{
   width:auto; height:22px; background:none; border-radius:0;
 }
 
-/* rolagem suave */
 html { scroll-behavior: smooth; }
-
-/* quando rolar até uma âncora, compensa a altura do header */
-section[id] { scroll-margin-top: 80px; } /* ajuste conforme a altura da shellbar */
+section[id] { scroll-margin-top: 80px; } 
